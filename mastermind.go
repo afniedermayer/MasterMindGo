@@ -2,21 +2,21 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"math"
-	"time"
+	"math/rand"
 	"sync"
+	"time"
 )
 
 type Color int
 
 const (
 	Empty Color = iota
-	Blue 
-	Red 
-	Black 
-	White 
-	Green 
+	Blue
+	Red
+	Black
+	White
+	Green
 	Yellow
 )
 
@@ -27,7 +27,6 @@ func elapsed(what string) func() {
 	}
 }
 
-
 const Npegs = 4
 const Ncolors = int(Yellow + 1)
 
@@ -36,7 +35,7 @@ type Guess [Npegs]Color
 var ColorNames = []string{"empty", "blue", "red", "black", "white", "green", "yellow"}
 
 var ColorLetters = map[rune]Color{'e': Empty, 'b': Blue, 'r': Red, 'k': Black,
-	'w': White, 'g': Green, 'y': Yellow }
+	'w': White, 'g': Green, 'y': Yellow}
 
 type Status int
 
@@ -74,7 +73,7 @@ type Answer struct {
 }
 
 type Fact struct {
-	guess Guess
+	guess  Guess
 	answer Answer
 }
 
@@ -104,14 +103,14 @@ func (a Answer) String() string {
 func Compare(g1 Guess, g2 Guess) Answer {
 	blacks, whites := 0, 0
 	var used1, used2 [Npegs]bool
-	for i:=0; i<Npegs; i++ {
+	for i := 0; i < Npegs; i++ {
 		if g1[i] == g2[i] {
 			blacks += 1
 			used1[i], used2[i] = true, true
 		}
 	}
-	for i:=0; i<Npegs; i++ {
-		for j:=0; j<Npegs; j++ {
+	for i := 0; i < Npegs; i++ {
+		for j := 0; j < Npegs; j++ {
 			if i != j && !used1[i] && !used2[j] && g1[i] == g2[j] {
 				whites += 1
 				used1[i], used2[j] = true, true
@@ -147,7 +146,7 @@ func calculateAllGuessesInner(result *[]Guess, prevColors []Color) {
 		copy(prevColorsArray[:], prevColors)
 		*result = append(*result, Guess(prevColorsArray))
 	} else {
-		for i:=0; i<Ncolors; i++ {
+		for i := 0; i < Ncolors; i++ {
 			calculateAllGuessesInner(result, append(prevColors, Color(i)))
 		}
 	}
@@ -279,28 +278,28 @@ func PlayAutomatically(solution Guess) {
 }
 
 func PlayManually() {
-    fmt.Printf("Please think of a color for %d pegs.\n", Npegs)
-    fmt.Printf("Possible colors are %v.\n", ColorNames)
-    fmt.Printf("For each question, respond with the number of black pegs and white pegs, ")
-    fmt.Printf("separated by a space.\n")
-    fmt.Printf("Enter 'q' to quit.\n")
-    ask := func(guess Guess) (Answer, bool) {
-    	fmt.Println()
-    	fmt.Printf("My guess is %v\n", guess)
-    	fmt.Println("Black pegs, white pegs?")
-    	var blacks, whites int
-    	_, err := fmt.Scanf("%d %d\n", &blacks, &whites)
-    	if err != nil {
-    		return Answer{}, true
-    	}
-    	return Answer{blacks, whites}, false
-    }
-    Play(ask)
+	fmt.Printf("Please think of a color for %d pegs.\n", Npegs)
+	fmt.Printf("Possible colors are %v.\n", ColorNames)
+	fmt.Printf("For each question, respond with the number of black pegs and white pegs, ")
+	fmt.Printf("separated by a space.\n")
+	fmt.Printf("Enter 'q' to quit.\n")
+	ask := func(guess Guess) (Answer, bool) {
+		fmt.Println()
+		fmt.Printf("My guess is %v\n", guess)
+		fmt.Println("Black pegs, white pegs?")
+		var blacks, whites int
+		_, err := fmt.Scanf("%d %d\n", &blacks, &whites)
+		if err != nil {
+			return Answer{}, true
+		}
+		return Answer{blacks, whites}, false
+	}
+	Play(ask)
 }
 
 func benchmarkCompare(g1, g2 Guess) {
 	defer elapsed("benchmark compare")()
-	for i:=0; i<1000000; i++ {
+	for i := 0; i < 1000000; i++ {
 		_ = Compare(g1, g2)
 	}
 }
@@ -309,7 +308,7 @@ func benchmarkFL(g1, g2 Guess) {
 	defer elapsed("benchmark getting element from frequency list")()
 	answer := Compare(g1, g2)
 	fl := FrequencyList{}
-	for i:=0; i<1000000; i++ {
+	for i := 0; i < 1000000; i++ {
 		fl[answer] += 1
 	}
 }
