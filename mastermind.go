@@ -49,17 +49,15 @@ func (c Color) String() string {
 	return ColorNames[c]
 }
 
-func RandomGuess() Guess {
-	var pegs [Npegs]Color
-	for i := range pegs {
-		pegs[i] = Color(rand.Intn(Ncolors))
+func RandomGuess() (guess Guess) {
+	for i := range guess {
+		guess[i] = Color(rand.Intn(Ncolors))
 	}
-	return Guess(pegs)
+	return guess
 }
 
-func GuessFromString(s string) Guess {
-	var guess Guess
-	i := 0
+func GuessFromString(s string) (guess Guess) {
+	i := 0 // separate counter in the case there might be non-ASCII chars in s
 	for _, c := range s {
 		guess[i] = ColorLetters[c]
 		i++
@@ -124,6 +122,9 @@ func CountAllBlacks(fl FrequencyList) int {
 	return fl[Answer{Npegs, 0}]
 }
 
+// computes the informational value (aka Shannon entropy)
+// corresponding to the frequency list
+// see https://en.wikipedia.org/wiki/Entropy_(information_theory)
 func InfoValue(fl FrequencyList) float64 {
 	r := 0.0
 	ntot := 0.0
@@ -153,8 +154,8 @@ func calculateAllGuessesInner(result *[]Guess, prevColors []Color) {
 }
 
 func calculateAllGuesses() []Guess {
-	defer elapsed("calculate all guesses")()
 	var result []Guess
+	defer elapsed("calculate all guesses")()
 	calculateAllGuessesInner(&result, []Color{})
 	return result
 }
