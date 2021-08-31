@@ -75,7 +75,17 @@ type Fact struct {
 	answer Answer
 }
 
-type FrequencyList map[Answer]int
+const frequencyListSize = (Npegs + 1) * (Npegs + 1)
+
+type FrequencyList [frequencyListSize]int
+
+func Index(answer Answer) int {
+	return (Npegs+1)*answer.blacks + answer.whites
+}
+
+func (fl FrequencyList) Incr(answer Answer) {
+	fl[Index(answer)] += 1
+}
 
 func (f Fact) String() string {
 	return fmt.Sprintf("[%v %v]", f.guess, f.answer)
@@ -119,7 +129,7 @@ func Compare(g1 Guess, g2 Guess) Answer {
 }
 
 func CountAllBlacks(fl FrequencyList) int {
-	return fl[Answer{Npegs, 0}]
+	return fl[Index(Answer{Npegs, 0})]
 }
 
 // computes the informational value (aka Shannon entropy)
@@ -209,7 +219,7 @@ func MakeGuess(facts []Fact) (Guess, Status, int) {
 			fl := FrequencyList{}
 			for _, solution := range possibleSolutions {
 				answer := Compare(allGuesses[i], solution)
-				fl[answer] += 1
+				fl.Incr(answer)
 			}
 			infoValues[i] = InfoValue(fl)
 		}(i)
@@ -310,7 +320,7 @@ func benchmarkFL(g1, g2 Guess) {
 	answer := Compare(g1, g2)
 	fl := FrequencyList{}
 	for i := 0; i < 1000000; i++ {
-		fl[answer] += 1
+		fl.Incr(answer)
 	}
 }
 
