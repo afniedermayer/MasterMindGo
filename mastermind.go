@@ -137,18 +137,13 @@ func CountAllBlacks(fl FrequencyList) int {
 // see https://en.wikipedia.org/wiki/Entropy_(information_theory)
 func InfoValue(fl FrequencyList) float64 {
 	r := 0.0
-	ntot := 0.0
+	ntot := float64(frequencyListSize)
 	for _, v := range fl {
-		ntot += 1
 		if v != 0 && v != 1 {
 			r -= float64(v) * math.Log(float64(v))
 		}
 	}
-	if ntot > 0 {
-		return (r/ntot + math.Log(ntot)) / math.Log(2.0)
-	} else {
-		return 0.0
-	}
+	return (r/ntot + math.Log(ntot)) / math.Log(2.0)
 }
 
 func calculateAllGuessesInner(result *[]Guess, prevColors []Color) {
